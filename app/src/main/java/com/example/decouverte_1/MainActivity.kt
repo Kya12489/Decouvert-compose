@@ -19,12 +19,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.decouverte_1.ui.theme.Decouverte1Theme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MyApp(
                         modifier = Modifier.padding(innerPadding)
-                        , names = listOf("World","Lawrence")
+
                     )
                 }
             }
@@ -44,16 +48,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(
-    modifier: Modifier = Modifier,
-    names: List<String> = listOf("World", "Compose")
-) {
-    Column(modifier = modifier.padding(vertical = 50.dp)) {
-        for (name in names) {
-            Greeting(name = name)
+fun MyApp(modifier: Modifier = Modifier) {
+
+    var shouldShowOnboarding by remember { mutableStateOf(true) }
+
+    Surface(modifier) {
+        if (shouldShowOnboarding) {
+            OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false})
+        } else {
+            Greetings()
         }
     }
 }
+
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     val padding = remember { mutableStateOf(Modifier.padding(24.dp)) }
@@ -71,7 +78,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             Button(onClick = {
                 expended.value = !expended.value
                 if (expended.value)
-                    padding.value = Modifier.padding(top = 24.dp, start = 24.dp, end = 24.dp,bottom = 500.dp)
+                    padding.value = Modifier.padding(top = 24.dp, start = 24.dp, end = 24.dp,bottom = 100.dp)
                 else
                     padding.value = Modifier.padding(all = 24.dp)
 
@@ -81,11 +88,70 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         }
     }
 }
+@Composable
+private fun Greetings(
+    modifier: Modifier = Modifier,
+    names: List<String> = listOf("World", "Compose")
+) {
+    Column(modifier = modifier.padding(vertical = 4.dp)) {
+        for (name in names) {
+            Greeting(name = name)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun MyAppPreview() {
+    BasicsCodelabTheme {
+        MyApp(Modifier.fillMaxSize())
+    }
+}
+@Composable
+fun OnboardingScreen(modifier: Modifier = Modifier,onContinueClicked:() -> Unit) {
+    // TODO: This state should be hoisted
+    var shouldShowOnboarding by remember { mutableStateOf(true) }
+
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Welcome to the Basics Codelab!")
+        Button(
+            modifier = Modifier.padding(vertical = 24.dp),
+            onClick = { shouldShowOnboarding = false }
+        ) {
+            Text("Continue")
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 320, heightDp = 320)
+@Composable
+fun OnboardingPreview() {
+    BasicsCodelabTheme {
+        OnboardingScreen()
+    }
+}
+
+@Composable
+fun BasicsCodelabTheme(content: @Composable () -> Unit) {
+    TODO("Not yet implemented")
+}
 
 @Preview(showBackground = true, widthDp = 500)
 @Composable
 fun GreetingPreview() {
     Decouverte1Theme {
         MyApp()
+    }
+}
+
+@Preview
+@Composable
+fun MyAppPreview() {
+    BasicsCodelabTheme {
+        MyApp(Modifier.fillMaxSize())
     }
 }
