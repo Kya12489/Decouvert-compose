@@ -31,6 +31,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.animation.core.animateDpAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +54,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
 
-    var shouldShowOnboarding by remember { mutableStateOf(true) }
+    var shouldShowOnboarding by rememberSaveable { mutableStateOf(true) }
 
     Surface(modifier) {
         if (shouldShowOnboarding) {
@@ -67,23 +69,22 @@ fun MyApp(modifier: Modifier = Modifier) {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     val padding = remember { mutableStateOf(Modifier.padding(24.dp)) }
-    val expended = remember { mutableStateOf(false) }
+    var expended by rememberSaveable  { mutableStateOf(false) }
+    val extraPadding by animatDpAsState(if(expended)48.dp else 0.dp)
     Surface(
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
 
         Row(modifier = padding.value) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier
+                .weight(1f)
+                .padding(bottom=extraPadding)) {
                 Text(text = "Hello ")
                 Text(text = name)
             }
             Button(onClick = {
                 expended.value = !expended.value
-                if (expended.value)
-                    padding.value = Modifier.padding(top = 24.dp, start = 24.dp, end = 24.dp,bottom = 100.dp)
-                else
-                    padding.value = Modifier.padding(all = 24.dp)
 
             }){
                 Text(text = if (expended.value) "Show less" else "Show more")
